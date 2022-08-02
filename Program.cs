@@ -23,7 +23,7 @@ builder.Services.AddSwaggerGen();
 //     services.AddHttpsRedirection(options => options.HttpsPort = 443);
 // }
 //! ---------------- USE THIS vvv
-// builder.Services.AddDbContext<RestaurantDbContext>(options =. options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<RestaurantDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 /** In appsettings.json
 "ConnectionStrings": {
@@ -98,4 +98,12 @@ app.Run();
                 - [MaxLength(#)]: limits the length of this property.
             
             - https://docs.microsoft.com/en-us/ef/core/modeling/entity-properties?tabs=data-annotations%2Cwithout-nrt
+
+            Dependency Injection:
+                - dotnet add package Microsoft.Extensions.DependencyInjection
+                    - able to request an object through parameters of a constructor. EF will inject an instance of that object automatically.
+                    - This allows us to setup specifics like, Services, HttpClients, helper classes, etc. anywhere in the app and ask simply through a constructor.
+
+                    [[Example]]
+                    
 **/

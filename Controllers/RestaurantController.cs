@@ -27,7 +27,7 @@ namespace RestaurantRaterAPI.Controllers
         {
             //[FromForm] let EF know this is coming from form data (HTML form tag)
 
-            if(!ModelState.IsValid)
+            if(!ModelState.IsValid) // the value within the RestaurantEdit is returned back with valid data.
             {
                 return BadRequest(ModelState);
             }
@@ -61,6 +61,52 @@ namespace RestaurantRaterAPI.Controllers
             }
 
             return Ok(restaurant);
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> UpdateRestaurant([FromForm] RestaurantEdit model, [FromRoute] int id)
+        {
+            var oldRestaurant = await _context.Restaurants.FindAsync(id);
+
+            if(oldRestaurant is null) // Check to see if the ID is not within the DB
+            {
+                return NotFound();
+            }
+
+            if(!ModelState.IsValid) // Model of RestaurantEdit is good
+            {
+                return BadRequest();
+            }
+
+            // Checks to see if either the name or location strings being provided is null.
+            if(!string.IsNullOrEmpty(model.Name)) // IsNullOrEmpty() simplifies the logic to check if the string is null or not.
+            {
+                oldRestaurant.Name = model.Name;
+            }
+
+            if(!string.IsNullOrEmpty(model.Location))
+            {
+                oldRestaurant.Location = model.Location;
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> DeleteRestaurant([FromRoute] int id)
+        {
+            var restaurant = await _context.Restaurants.FindAsync(id);
+            if(restaurant is null)
+            {
+                return NotFound();
+            }
+
+            _context.Restaurants.Remove(restaurant);
+            await _context.SaveChangesAsync();
+            return Ok();
         }
     }
 }

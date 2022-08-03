@@ -43,9 +43,15 @@ namespace RestaurantRaterAPI.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetRestaurant()
+        public async Task<IActionResult> GetAllRestaurants()
         {
-            var restaurants = await _context.Restaurants.ToListAsync();
+            var restaurants = await _context.Restaurants.Include(r => r.Ratings).ToListAsync();
+
+            // List<RestaurantListItem> restaurantList = restaurants.Select(r => new RestaurantListItem() {
+
+            // }).ToList();
+
+            // return Ok(restaurantList);
             return Ok(restaurants);
         }
 
@@ -53,7 +59,8 @@ namespace RestaurantRaterAPI.Controllers
         [Route("{id}")]
         public async Task<IActionResult> GetRestaurantById(int id)
         {
-            var restaurant = await _context.Restaurants.FindAsync(id); // returns null if no id is matched
+            // var restaurant = await _context.Restaurants.FindAsync(id); // returns null if no id is matched
+            var restaurant = await _context.Restaurants.Include(r => r.Ratings).FirstOrDefaultAsync(r => r.Id == id); // Include returns a Query, ot a DbSet. We use FirstOrDefaultAsync to help us locate a particular restaruant.
 
             if(restaurant == null)
             {
